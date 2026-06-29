@@ -24,61 +24,24 @@
             overflow: hidden;
         }
 
-        /* --- MODERNIZED LOADING SCREEN (PRELOADER) --- */
+        /* --- PURE MINIMALIST BLACK & WHITE LOADING SCREEN --- */
         #loader {
             position: fixed;
             inset: 0;
-            background: radial-gradient(circle at center, #041409 0%, #020503 100%);
+            background: #000000;
             z-index: 9999;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
-            gap: 24px;
-        }
-
-        /* Modern Progress Bar instead of old spinner */
-        .loader-bar-container {
-            width: 240px;
-            height: 4px;
-            background: rgba(0, 255, 136, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.05);
-        }
-
-        .loader-bar-progress {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, #00ff88, #00e67a);
-            border-radius: 10px;
-            transform: translateX(-100%);
-            animation: loadProgress 2.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            box-shadow: 0 0 12px #00ff88;
         }
 
         .loader-text {
             font-family: 'Space Grotesk', sans-serif;
-            color: #00ff88;
-            font-size: 0.9rem;
-            font-weight: 500;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
-            animation: pulseText 1.5s ease-in-out infinite;
-        }
-
-        @keyframes loadProgress {
-            0% { transform: translateX(-100%); }
-            50% { transform: translateX(-40%); }
-            100% { transform: translateX(0%); }
-        }
-
-        @keyframes pulseText {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
+            color: #ffffff;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
         }
 
         /* --- LARGER & MODERN INFO POPUP --- */
@@ -432,10 +395,7 @@
 <body>
 
     <div id="loader">
-        <div class="loader-text">Loading ACE Launcher</div>
-        <div class="loader-bar-container">
-            <div class="loader-bar-progress"></div>
-        </div>
+        <div class="loader-text">Ace Launcher</div>
     </div>
 
     <div id="info-popup">
@@ -611,7 +571,7 @@
         });
 
         /* ==========================================
-           2. MODERNIZED TIMER MANAGEMENT (LOADER & POPUP)
+           2. TIMER MANAGEMENT (LOADER & POPUP)
            ========================================== */
         window.addEventListener('load', () => {
             const loader = document.getElementById('loader');

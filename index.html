@@ -27,9 +27,14 @@
         /* --- BACKGROUND CONTAINER --- */
         .bg-container {
             position: absolute;
-            inset: 0;
+            /* Etwas größer als der Bildschirm, damit man beim Parallax-Effekt keine Ränder sieht */
+            inset: -5%;
+            width: 110%;
+            height: 110%;
             z-index: 1;
             overflow: hidden;
+            /* Weicher Übergang für die Mausbewegung */
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .sq {
@@ -54,9 +59,11 @@
         .bg-vignette {
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at 30% 40%, rgba(2, 5, 3, 0.1) 0%, rgba(2, 5, 3, 0.85) 80%);
+            /* Interaktives Radial-Gradient basierend auf CSS-Variablen (Fallback auf 30% 40%) */
+            background: radial-gradient(circle at var(--mouse-x, 30%) var(--mouse-y, 40%), rgba(2, 5, 3, 0.1) 0%, rgba(2, 5, 3, 0.85) 80%);
             z-index: 2;
             pointer-events: none;
+            transition: background 0.15s ease-out;
         }
 
         /* --- HAUPTINHALT --- */
@@ -268,7 +275,7 @@
 <body>
 
     <div class="bg-container" id="squares-container"></div>
-    <div class="bg-vignette"></div>
+    <div class="bg-vignette" id="vignette-layer"></div>
 
     <main class="main-content">
         <h1 class="title">ACE<br>LAUNCHER</h1>
@@ -290,178 +297,3 @@
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="4" y1="6" x2="20" y2="6"></line>
                     <line x1="4" y1="12" x2="20" y2="12"></line>
-                    <line x1="4" y1="18" x2="20" y2="18"></line>
-                </svg>
-                Versionen
-            </button>
-
-            <div class="versions-dropdown" id="versions-menu"></div>
-        </div>
-        
-        <div class="apk-info" id="main-apk-info">
-            <span class="apk-name" id="main-apk-title">Lade...</span>
-            <span class="apk-meta" id="main-apk-details">Suche Versionen...</span>
-        </div>
-    </footer>
-
-    <script>
-        /* ==========================================
-           1. AUTOMATISCHE APK-VERWALTUNG & SORTIERUNG
-           ========================================== */
-        
-        const apkFiles = [
-             "ACE Launcher 1.0.0.38.apk",
-             "ACE Launcher 1.0.0.37.apk",
-             "ACE Launcher 1.0.0.36.apk",
-             "ACE Launcher 1.0.0.35.apk",
-             "ACE Launcher 1.0.0.34.apk",
-             "ACE Launcher 1.0.0.33.apk",
-             "ACE Launcher 1.0.0.30.apk",
-             "ACE Launcher 1.0.0.29.apk",
-             "ACE Launcher 1.0.0.28.apk",
-             "ACE Launcher 1.0.0.27.apk",
-             "ACE Launcher 1.0.0.26.apk",
-             "ACE Launcher 1.0.0.25.apk",
-             "ACE Launcher 1.0.0.24.apk",
-             "ACE Launcher 1.0.0.23.apk",
-             "ACE Launcher 1.0.0.22.apk",
-             "ACE Launcher 1.0.0.21.apk",
-             "ACE Launcher 1.0.0.20.apk",
-             "ACE Launcher 1.0.0.19.apk",
-             "ACE Launcher 1.0.0.18.apk",
-             "ACE Launcher 1.0.0.17.apk",
-             "ACE Launcher 1.0.0.16.apk",
-             "ACE Launcher 1.0.0.15.apk",
-             "ACE Launcher 1.0.0.14.apk",
-        ];
-
-        function extractVersion(filename) {
-            const match = filename.match(/(\d+\.\d+\.\d+\.\d+|\d+\.\d+\.\d+)/);
-            return match ? match[0] : "0.0.0";
-        }
-
-        // Hilfsfunktion zur Bereinigung des Display-Namens im UI
-        function formatCleanName(filename) {
-            return filename
-                .replace(/\.apk$/i, '')        // Entfernt die Dateiendung .apk
-                .replace('Launcehr', 'Launcher'); // Korrigiert eventuelle Tippfehler im Namen
-        }
-
-        function sortApks(a, b) {
-            const vA = extractVersion(a).split('.').map(Number);
-            const vB = extractVersion(b).split('.').map(Number);
-            for (let i = 0; i < Math.max(vA.length, vB.length); i++) {
-                const numA = vA[i] || 0;
-                const numB = vB[i] || 0;
-                if (numA !== numB) return numB - numA; 
-            }
-            return 0;
-        }
-
-        apkFiles.sort(sortApks);
-
-        const mainDownloadBtn = document.getElementById('main-download-btn');
-        const mainApkTitle = document.getElementById('main-apk-title');
-        const mainApkDetails = document.getElementById('main-apk-details');
-        const versionsMenu = document.getElementById('versions-menu');
-        const versionsToggleBtn = document.getElementById('versions-toggle-btn');
-
-        if (apkFiles.length > 0) {
-            const latestApk = apkFiles[0];
-            const latestVersion = extractVersion(latestApk);
-
-            // 1. Haupt-Button & Footer-Text konfigurieren (bereinigt)
-            mainDownloadBtn.href = latestApk;
-            mainDownloadBtn.setAttribute('download', latestApk);
-            mainApkTitle.textContent = formatCleanName(latestApk); // Saubere Anzeige
-            mainApkDetails.textContent = `Neueste Version ${latestVersion} • APK-Datei`;
-
-            // 2. "Current"-Eintrag ganz oben im Dropdown erstellen
-            const currentItem = document.createElement('a');
-            currentItem.href = latestApk;
-            currentItem.setAttribute('download', latestApk);
-            currentItem.classList.add('dropdown-item', 'current-highlight');
-            currentItem.innerHTML = `
-                <span style="font-weight: 600; color: #00ff88;">Current (v${latestVersion})</span>
-                <span class="latest-badge">Aktiv</span>
-            `;
-            versionsMenu.appendChild(currentItem);
-
-            // 3. Sektionstitel / Trenner für das Archiv hinzufügen
-            const sectionTitle = document.createElement('div');
-            sectionTitle.classList.add('dropdown-section-title');
-            sectionTitle.textContent = "Alle Versionen";
-            versionsMenu.appendChild(sectionTitle);
-
-            // 4. Alle Versionen auflisten
-            apkFiles.forEach((apk, index) => {
-                const versionNum = extractVersion(apk);
-                const item = document.createElement('a');
-                item.href = apk;
-                item.setAttribute('download', apk);
-                item.classList.add('dropdown-item');
-                
-                item.innerHTML = `
-                    <span>v${versionNum}</span>
-                    ${index === 0 ? '<span style="color: #00ff88; font-size:0.85rem; font-weight:600;">Neueste</span>' : '<span style="opacity:0.4; font-size:0.85rem;">APK</span>'}
-                `;
-                versionsMenu.appendChild(item);
-            });
-        }
-
-        versionsToggleBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            versionsMenu.classList.toggle('show');
-        });
-
-        document.addEventListener('click', () => {
-            versionsMenu.classList.remove('show');
-        });
-
-        /* ==========================================
-           2. ANIMIERTER ZUFALLS-SQUARES HINTERGRUND
-           ========================================== */
-        const container = document.getElementById('squares-container');
-        const greenColors = ['#04120a', '#0a2413', '#11351c', '#1b4d2a', '#286e3d', '#3d9c5b', '#00ff88'];
-        const purpleColors = ['#2b061a', '#4a0a2c', '#1c051a'];
-        const totalSquares = 130;
-
-        for (let i = 0; i < totalSquares; i++) {
-            const square = document.createElement('div');
-            square.classList.add('sq');
-
-            const posX = Math.random() * 120 - 10;
-            const posY = Math.random() * 120 - 10;
-            square.style.left = posX + '%';
-            square.style.top = posY + '%';
-
-            const size = Math.floor(Math.random() * 160) + 60;
-            square.style.width = size + 'px';
-            square.style.height = size + 'px';
-
-            let colorPool = greenColors;
-            if (posX < 35 && posY < 45 && Math.random() > 0.3) {
-                colorPool = purpleColors;
-            } else if (Math.random() > 0.92) { 
-                colorPool = purpleColors;
-            }
-            square.style.backgroundColor = colorPool[Math.floor(Math.random() * colorPool.length)];
-
-            const driftX = (Math.random() * 60 - 30) + 'px';
-            const driftY = (Math.random() * 60 - 30) + 'px';
-            const driftRot = (Math.random() * 30 - 15) + 'deg';
-            const baseOpacity = (Math.random() * 0.4 + 0.35);
-
-            square.style.setProperty('--drift-x', driftX);
-            square.style.setProperty('--drift-y', driftY);
-            square.style.setProperty('--drift-rot', driftRot);
-            square.style.setProperty('--base-opacity', baseOpacity);
-
-            square.style.animationDuration = (Math.random() * 12 + 10) + 's';
-            square.style.animationDelay = '-' + (Math.random() * 20) + 's';
-
-            container.appendChild(square);
-        }
-    </script>
-</body>
-</html>

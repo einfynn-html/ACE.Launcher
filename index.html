@@ -131,7 +131,7 @@
             box-shadow: 0 15px 40px rgba(0, 255, 136, 0.5);
         }
 
-        /* Der neue Versionen Button */
+        /* Der Versionen-Button */
         .versions-btn {
             display: inline-flex;
             align-items: center;
@@ -160,7 +160,7 @@
             bottom: calc(100% + 12px);
             left: 0;
             width: 320px;
-            max-height: 280px;
+            max-height: 320px;
             background: rgba(4, 14, 9, 0.95);
             border: 1px solid rgba(0, 255, 136, 0.2);
             border-radius: 16px;
@@ -200,6 +200,28 @@
             background: rgba(0, 255, 136, 0.12);
             color: #00ff88;
             padding-left: 20px;
+        }
+
+        /* Spezielles Styling für die "Current"-Auswahl */
+        .dropdown-item.current-highlight {
+            background: rgba(0, 255, 136, 0.08);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+        
+        .dropdown-item.current-highlight:hover {
+            background: rgba(0, 255, 136, 0.18);
+        }
+
+        /* Zwischenüberschrift / Trennung */
+        .dropdown-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #628a73;
+            padding: 10px 16px 4px 16px;
+            font-weight: 600;
+            border-top: 1px solid rgba(0, 255, 136, 0.1);
+            margin-top: 4px;
         }
 
         .latest-badge {
@@ -290,8 +312,8 @@
            1. AUTOMATISCHE APK-VERWALTUNG & SORTIERUNG
            ========================================== */
         
-        // Füge hier in Zukunft einfach neue APK-Dateinamen hinzu!
         const apkFiles = [
+             "ACE Launcehr 1.0.0.38.apk",
              "ACE Launcehr 1.0.0.37.apk",
              "ACE Launcehr 1.0.0.36.apk",
              "ACE Launcehr 1.0.0.35.apk",
@@ -305,24 +327,22 @@
              "ACE Launcehr 1.0.0.25.apk",
              "ACE Launcehr 1.0.0.24.apk",
              "ACE Launcehr 1.0.0.23.apk",
-            "ACE Launcehr 1.0.0.22.apk",
-            "ACE Launcher 1.0.0.21.apk",
-            "ACE Launcher 1.0.0.20.apk",
-            "ACE Launcher 1.0.0.19.apk",
-            "ACE Launcehr 1.0.0.18.apk",
-            "ACE Launcher 1.0.0.17.apk",
-            "ACE Launcher 1.0.0.16.apk",
-            "ACE Launcher 1.0.0.15.apk",
-            "ACE Launcher 1.0.0.14.apk",
+             "ACE Launcehr 1.0.0.22.apk",
+             "ACE Launcher 1.0.0.21.apk",
+             "ACE Launcher 1.0.0.20.apk",
+             "ACE Launcher 1.0.0.19.apk",
+             "ACE Launcehr 1.0.0.18.apk",
+             "ACE Launcher 1.0.0.17.apk",
+             "ACE Launcher 1.0.0.16.apk",
+             "ACE Launcher 1.0.0.15.apk",
+             "ACE Launcher 1.0.0.14.apk",
         ];
 
-        // Hilfsfunktion: Extrahiert die Versionsnummer aus dem Dateinamen (z.B. "1.0.0.14")
         function extractVersion(filename) {
             const match = filename.match(/(\d+\.\d+\.\d+\.\d+|\d+\.\d+\.\d+)/);
             return match ? match[0] : "0.0.0";
         }
 
-        // Sortierungs-Logik: Vergleicht Versionsnummern semantisch (Höchste zuerst)
         function sortApks(a, b) {
             const vA = extractVersion(a).split('.').map(Number);
             const vB = extractVersion(b).split('.').map(Number);
@@ -334,7 +354,6 @@
             return 0;
         }
 
-        // Sortiere das Array direkt beim Laden
         apkFiles.sort(sortApks);
 
         const mainDownloadBtn = document.getElementById('main-download-btn');
@@ -347,13 +366,30 @@
             const latestApk = apkFiles[0];
             const latestVersion = extractVersion(latestApk);
 
-            // 1. Haupt-Button auf die neueste Version einstellen
+            // 1. Haupt-Button konfigurieren
             mainDownloadBtn.href = latestApk;
             mainDownloadBtn.setAttribute('download', latestApk);
             mainApkTitle.textContent = latestApk;
             mainApkDetails.textContent = `Neueste Version ${latestVersion} • APK-Datei`;
 
-            // 2. Das Versionen-Menü automatisch generieren
+            // 2. "Current"-Eintrag ganz oben im Dropdown erstellen
+            const currentItem = document.createElement('a');
+            currentItem.href = latestApk;
+            currentItem.setAttribute('download', latestApk);
+            currentItem.classList.add('dropdown-item', 'current-highlight');
+            currentItem.innerHTML = `
+                <span style="font-weight: 600; color: #00ff88;">Current (v${latestVersion})</span>
+                <span class="latest-badge">Aktiv</span>
+            `;
+            versionsMenu.appendChild(currentItem);
+
+            // 3. Sektionstitel / Trenner für das Archiv hinzufügen
+            const sectionTitle = document.createElement('div');
+            sectionTitle.classList.add('dropdown-section-title');
+            sectionTitle.textContent = "Alle Versionen";
+            versionsMenu.appendChild(sectionTitle);
+
+            // 4. Alle Versionen auflisten
             apkFiles.forEach((apk, index) => {
                 const versionNum = extractVersion(apk);
                 const item = document.createElement('a');
@@ -361,26 +397,22 @@
                 item.setAttribute('download', apk);
                 item.classList.add('dropdown-item');
                 
-                // Text-Inhalt für das Menü-Item
                 item.innerHTML = `
                     <span>v${versionNum}</span>
-                    ${index === 0 ? '<span class="latest-badge">Neu</span>' : '<span style="opacity:0.4; font-size:0.85rem;">APK</span>'}
+                    ${index === 0 ? '<span style="color: #00ff88; font-size:0.85rem; font-weight:600;">Neueste</span>' : '<span style="opacity:0.4; font-size:0.85rem;">APK</span>'}
                 `;
                 versionsMenu.appendChild(item);
             });
         }
 
-        // Dropdown-Menü ein- und ausblenden
         versionsToggleBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             versionsMenu.classList.toggle('show');
         });
 
-        // Schließen, wenn man irgendwo anders hinklickt
         document.addEventListener('click', () => {
             versionsMenu.classList.remove('show');
         });
-
 
         /* ==========================================
            2. ANIMIERTER ZUFALLS-SQUARES HINTERGRUND

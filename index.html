@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ACE Launcher - Download</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Space+Grotesk:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@700&display=swap');
 
         * { 
             margin: 0; 
@@ -32,16 +32,14 @@
             overflow: hidden;
         }
 
-        /* Styling für die dynamisch generierten Quadrate */
         .sq {
             position: absolute;
             border-radius: 12px;
-            mix-blend-mode: screen; /* Lässt die Quadrate wie im Bild weich ineinander übergehen */
+            mix-blend-mode: screen;
             pointer-events: none;
             animation: floatAround infinite ease-in-out;
         }
 
-        /* Sanfte, schwebende Animation */
         @keyframes floatAround {
             0%, 100% {
                 transform: translate(0, 0) rotate(0deg) scale(1);
@@ -53,7 +51,6 @@
             }
         }
 
-        /* Dunkle Vignette für perfekte Lesbarkeit des Textes */
         .bg-vignette {
             position: absolute;
             inset: 0;
@@ -95,7 +92,7 @@
             text-shadow: 0 4px 14px rgba(0,0,0,0.6);
         }
 
-        /* --- FOOTER (Unten links) --- */
+        /* --- FOOTER BEREICH --- */
         .bottom-bar {
             width: 100%;
             padding: 40px 10%;
@@ -107,6 +104,13 @@
             background: linear-gradient(to top, #020503 60%, transparent 100%);
         }
 
+        /* Container für die Buttons wegen relativer Ausrichtung des Dropdowns */
+        .buttons-group {
+            display: flex;
+            gap: 12px;
+            position: relative;
+        }
+
         .download-btn {
             display: inline-flex;
             align-items: center;
@@ -115,7 +119,7 @@
             color: #020503;
             font-size: 1.15rem;
             font-weight: 600;
-            padding: 18px 44px;
+            padding: 18px 40px;
             border-radius: 14px;
             text-decoration: none;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -125,6 +129,87 @@
         .download-btn:hover {
             transform: translateY(-4px);
             box-shadow: 0 15px 40px rgba(0, 255, 136, 0.5);
+        }
+
+        /* Der neue Versionen Button */
+        .versions-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(4, 14, 9, 0.6);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.25);
+            font-size: 1.15rem;
+            font-weight: 600;
+            padding: 18px 24px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .versions-btn:hover {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+
+        /* Stylisches Versionen-Dropdown-Menü (Glassmorphismus) */
+        .versions-dropdown {
+            position: absolute;
+            bottom: calc(100% + 12px);
+            left: 0;
+            width: 320px;
+            max-height: 280px;
+            background: rgba(4, 14, 9, 0.95);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 16px;
+            padding: 8px;
+            overflow-y: auto;
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .versions-dropdown.show {
+            display: flex;
+            animation: fadeInUp 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(0, 255, 136, 0.12);
+            color: #00ff88;
+            padding-left: 20px;
+        }
+
+        .latest-badge {
+            font-size: 0.75rem;
+            background: rgba(0, 255, 136, 0.15);
+            color: #00ff88;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            border: 1px solid rgba(0, 255, 136, 0.3);
         }
 
         .apk-info {
@@ -155,7 +240,9 @@
                 padding: 30px 6% 40px 6%;
                 gap: 16px;
             }
-            .download-btn { width: 100%; justify-content: center; }
+            .buttons-group { width: 100%; flex-direction: column; }
+            .download-btn, .versions-btn { width: 100%; justify-content: center; }
+            .versions-dropdown { width: 100%; }
         }
     </style>
 </head>
@@ -170,67 +257,171 @@
     </main>
 
     <footer class="bottom-bar">
-        <a href="ACE Launcher 1.0.0.38.apk" class="download-btn" download>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-            Jetzt herunterladen
-        </a>
+        <div class="buttons-group">
+            <a href="#" id="main-download-btn" class="download-btn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Jetzt herunterladen
+            </a>
+            
+            <button class="versions-btn" id="versions-toggle-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="4" y1="6" x2="20" y2="6"></line>
+                    <line x1="4" y1="12" x2="20" y2="12"></line>
+                    <line x1="4" y1="18" x2="20" y2="18"></line>
+                </svg>
+                Versionen
+            </button>
+
+            <div class="versions-dropdown" id="versions-menu"></div>
+        </div>
         
-        <div class="apk-info">
-            <span class="apk-name">ACE Launcher 1.0.0.38.apk</span>
-            <span class="apk-meta">Version 1.0.0.38 • 959 KB</span>
+        <div class="apk-info" id="main-apk-info">
+            <span class="apk-name" id="main-apk-title">Lade...</span>
+            <span class="apk-meta" id="main-apk-details">Suche Versionen...</span>
         </div>
     </footer>
 
     <script>
-        const container = document.getElementById('squares-container');
+        /* ==========================================
+           1. AUTOMATISCHE APK-VERWALTUNG & SORTIERUNG
+           ========================================== */
         
-        // Die Farb-Frequenzen aus deinem Bild
+        // Füge hier in Zukunft einfach neue APK-Dateinamen hinzu!
+        const apkFiles = [
+             "ACE Launcehr 1.0.0.37.apk",
+             "ACE Launcehr 1.0.0.36.apk",
+             "ACE Launcehr 1.0.0.35.apk",
+             "ACE Launcehr 1.0.0.34.apk",
+             "ACE Launcehr 1.0.0.33.apk",
+             "ACE Launcehr 1.0.0.30.apk",
+             "ACE Launcehr 1.0.0.29.apk",
+             "ACE Launcehr 1.0.0.28.apk",
+             "ACE Launcehr 1.0.0.27.apk",
+             "ACE Launcehr 1.0.0.26.apk",
+             "ACE Launcehr 1.0.0.25.apk",
+             "ACE Launcehr 1.0.0.24.apk",
+             "ACE Launcehr 1.0.0.23.apk",
+            "ACE Launcehr 1.0.0.22.apk",
+            "ACE Launcher 1.0.0.21.apk",
+            "ACE Launcher 1.0.0.20.apk",
+            "ACE Launcher 1.0.0.19.apk",
+            "ACE Launcehr 1.0.0.18.apk",
+            "ACE Launcher 1.0.0.17.apk",
+            "ACE Launcher 1.0.0.16.apk",
+            "ACE Launcher 1.0.0.15.apk",
+            "ACE Launcher 1.0.0.14.apk",
+        ];
+
+        // Hilfsfunktion: Extrahiert die Versionsnummer aus dem Dateinamen (z.B. "1.0.0.14")
+        function extractVersion(filename) {
+            const match = filename.match(/(\d+\.\d+\.\d+\.\d+|\d+\.\d+\.\d+)/);
+            return match ? match[0] : "0.0.0";
+        }
+
+        // Sortierungs-Logik: Vergleicht Versionsnummern semantisch (Höchste zuerst)
+        function sortApks(a, b) {
+            const vA = extractVersion(a).split('.').map(Number);
+            const vB = extractVersion(b).split('.').map(Number);
+            for (let i = 0; i < Math.max(vA.length, vB.length); i++) {
+                const numA = vA[i] || 0;
+                const numB = vB[i] || 0;
+                if (numA !== numB) return numB - numA; 
+            }
+            return 0;
+        }
+
+        // Sortiere das Array direkt beim Laden
+        apkFiles.sort(sortApks);
+
+        const mainDownloadBtn = document.getElementById('main-download-btn');
+        const mainApkTitle = document.getElementById('main-apk-title');
+        const mainApkDetails = document.getElementById('main-apk-details');
+        const versionsMenu = document.getElementById('versions-menu');
+        const versionsToggleBtn = document.getElementById('versions-toggle-btn');
+
+        if (apkFiles.length > 0) {
+            const latestApk = apkFiles[0];
+            const latestVersion = extractVersion(latestApk);
+
+            // 1. Haupt-Button auf die neueste Version einstellen
+            mainDownloadBtn.href = latestApk;
+            mainDownloadBtn.setAttribute('download', latestApk);
+            mainApkTitle.textContent = latestApk;
+            mainApkDetails.textContent = `Neueste Version ${latestVersion} • APK-Datei`;
+
+            // 2. Das Versionen-Menü automatisch generieren
+            apkFiles.forEach((apk, index) => {
+                const versionNum = extractVersion(apk);
+                const item = document.createElement('a');
+                item.href = apk;
+                item.setAttribute('download', apk);
+                item.classList.add('dropdown-item');
+                
+                // Text-Inhalt für das Menü-Item
+                item.innerHTML = `
+                    <span>v${versionNum}</span>
+                    ${index === 0 ? '<span class="latest-badge">Neu</span>' : '<span style="opacity:0.4; font-size:0.85rem;">APK</span>'}
+                `;
+                versionsMenu.appendChild(item);
+            });
+        }
+
+        // Dropdown-Menü ein- und ausblenden
+        versionsToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            versionsMenu.classList.toggle('show');
+        });
+
+        // Schließen, wenn man irgendwo anders hinklickt
+        document.addEventListener('click', () => {
+            versionsMenu.classList.remove('show');
+        });
+
+
+        /* ==========================================
+           2. ANIMIERTER ZUFALLS-SQUARES HINTERGRUND
+           ========================================== */
+        const container = document.getElementById('squares-container');
         const greenColors = ['#04120a', '#0a2413', '#11351c', '#1b4d2a', '#286e3d', '#3d9c5b', '#00ff88'];
         const purpleColors = ['#2b061a', '#4a0a2c', '#1c051a'];
-
-        const totalSquares = 130; // Anzahl der Quadrate für maximale Dichte
+        const totalSquares = 130;
 
         for (let i = 0; i < totalSquares; i++) {
             const square = document.createElement('div');
             square.classList.add('sq');
 
-            // Zufällige Position auf dem gesamten Bildschirm (leicht erweitert wegen der Flug-Animation)
             const posX = Math.random() * 120 - 10;
             const posY = Math.random() * 120 - 10;
             square.style.left = posX + '%';
             square.style.top = posY + '%';
 
-            // Zufällige Größe (zwischen 60px und 220px)
             const size = Math.floor(Math.random() * 160) + 60;
             square.style.width = size + 'px';
             square.style.height = size + 'px';
 
-            // Farbverteilung: Oben links (X < 35%, Y < 45%) bevorzugt lila Akzente, sonst Grün-Töne
             let colorPool = greenColors;
             if (posX < 35 && posY < 45 && Math.random() > 0.3) {
                 colorPool = purpleColors;
             } else if (Math.random() > 0.92) { 
-                colorPool = purpleColors; // Seltene lila Tupfer im restlichen Bild
+                colorPool = purpleColors;
             }
             square.style.backgroundColor = colorPool[Math.floor(Math.random() * colorPool.length)];
 
-            // Individuelle, leichte Flug-Richtung und Rotation per CSS-Variablen
-            const driftX = (Math.random() * 60 - 30) + 'px'; // Leichtes Hin- und Herfliegen um max 30px
+            const driftX = (Math.random() * 60 - 30) + 'px';
             const driftY = (Math.random() * 60 - 30) + 'px';
-            const driftRot = (Math.random() * 30 - 15) + 'deg'; // Sanftes Eindrehen um max 15 Grad
-            const baseOpacity = (Math.random() * 0.4 + 0.35); // Deckkraft zwischen 35% und 75% für Tiefenwirkung
+            const driftRot = (Math.random() * 30 - 15) + 'deg';
+            const baseOpacity = (Math.random() * 0.4 + 0.35);
 
             square.style.setProperty('--drift-x', driftX);
             square.style.setProperty('--drift-y', driftY);
             square.style.setProperty('--drift-rot', driftRot);
             square.style.setProperty('--base-opacity', baseOpacity);
 
-            // Zufällige Animationsdauer und negativer Delay (damit alle sofort versetzt starten)
-            square.style.animationDuration = (Math.random() * 12 + 10) + 's'; // Zwischen 10 und 22 Sekunden
+            square.style.animationDuration = (Math.random() * 12 + 10) + 's';
             square.style.animationDelay = '-' + (Math.random() * 20) + 's';
 
             container.appendChild(square);
